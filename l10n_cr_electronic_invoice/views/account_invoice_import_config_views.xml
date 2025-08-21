@@ -18,13 +18,16 @@
                             <field name="partner_id"/>
                         </group>
                         <group string="Parametros contables" name="accounting">
+                            <field name="company_id" invisible="1" />
                             <field name="journal_id" domain="[('company_id','=',company_id),('type','=','purchase')]"/>
                             <field name="account_id" required="True"/>
                             <field name="account_analytic_id" groups="analytic.group_analytic_accounting"/>
                             <field name="tax_id"/>
                             <field name="line_type" widget="radio"/>
-                            <field name="product_id" attrs="{'invisible': [('line_type', '!=', 'product_default')],
-                    'required': [('line_type', '=', 'product_default')]}"/>
+                            <field name="product_id"
+                                   invisible="line_type != 'product_default'"
+                                   required="line_type ==  'product_default' "
+                                   />
                         </group>
                     </sheet>
                 </form>

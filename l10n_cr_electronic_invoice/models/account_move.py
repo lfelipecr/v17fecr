@@ -24,6 +24,7 @@ STATE_EMAIL = [
 class AccountInvoice(models.Model):
     _inherit = "account.move"
 
+
     number_electronic = fields.Char(
         copy=False,
         index=True,
@@ -145,6 +146,7 @@ class AccountInvoice(models.Model):
 
     state_email = fields.Selection(selection=STATE_EMAIL, copy=False)
 
+
     @api.depends('metodo_pago_partner','partner_id', 'payment_method_id')
     def _compute_payment_method_different_is(self):
         for record in self:
@@ -168,6 +170,19 @@ class AccountInvoice(models.Model):
     #     self.cal_payment_method()
 
     def get_amounts(self, lines):
+        """Compute amounts to be used in XML generation based on invoice lines
+        The amounts are:
+        `service_taxed`: Sum line.no_discount_amount
+        `service_no_taxed`: Sum line.no_discount_amount
+        `service_exempt`: TODO
+        `product_taxed`: Sum line.no_discount_amount
+        `product_no_taxed`: Sum line.no_discount_amount
+        `product_exempt`: TODO
+        `discount`: Sum line.discount_amount
+        `other_charges`: TODO
+        Returns:
+            dict: Amounts calculated
+        """
         self.ensure_one()
         # Todo: DIGITOS
         digits = self.env.ref('l10n_cr_electronic_invoice.fecr_amount_precision').digits
@@ -257,6 +272,7 @@ class AccountInvoice(models.Model):
         digits = self.env.ref('l10n_cr_electronic_invoice.fecr_amount_precision').digits
 
         lines = []
+
 
         def compute_monto_total(line):
             currency = line.move_id.currency_id
@@ -891,6 +907,7 @@ class AccountInvoice(models.Model):
         else:
             sequence = TYPE_TO_SEQUENCE[str(self.tipo_documento)]
             if not sequence:
+
                 raise UserError(_("Configure una secuencia para este diario:  %s" % (self.journal_id.name)))
             tipo_documento = self.tipo_documento
             branch = self.journal_id.sucursal,
@@ -904,16 +921,19 @@ class AccountInvoice(models.Model):
         return [sequence, tipo_documento, branch, terminal]
 
 
-    def action_post(self):
+    def _post(self, soft=True):
         """Validates invoice and create sequence and number electronic"""
-        res = super(AccountInvoice, self).action_post()
+        res = super(AccountInvoice, self)._post(soft)
         for record in self:
+            #raise ValueError([record.move_type,record.state_send_invoice])
+
             if (record.move_type in ('out_invoice','out_refund','in_invoice','in_refund')
                 and record.state_send_invoice not in ('aceptado', 'procesando')):
                 record._generate_sequence()
         return res
 
     def _generate_sequence(self):
+
         for record in self:
             if record.to_process and record.tipo_documento not in ('NN',False):
                 record.validations()
@@ -1157,19 +1177,15 @@ class AccountInvoice(models.Model):
         values = super(AccountInvoice, self).default_get(default_fields)
         einvoice_fields_add = bool(self.env["ir.config_parameter"].sudo().get_param("einvoice_fields_add"))
         values['einvoice_fields_add'] = einvoice_fields_add
+
         return values
 
 
     #Para notas de crédito totales generar ya la secuencia
+    #no se sabe para que sirve esta funcion todo caso esta mal realizada
+    '''
     def _reverse_moves(self, default_values_list=None, cancel=False):
-        ''' Reverse a recordset of account.move.
-        If cancel parameter is true, the reconcilable or liquidity lines
-        of each original move will be reconciled with its reverse's.
-
-        :param default_values_list: A list of default values to consider per move.
-                                    ('type' & 'reversed_entry_id' are computed in the method).
-        :return:                    An account.move recordset, reverse of the current self.
-        '''
+        
         if not default_values_list:
             default_values_list = [{} for move in self]
 
@@ -1205,7 +1221,9 @@ class AccountInvoice(models.Model):
                     if line.currency_id:
                         line._onchange_currency()
             reverse_move._recompute_dynamic_lines(recompute_all_taxes=False)
-        reverse_moves._check_balanced()
+
+        container = {'records': self}
+        reverse_moves._check_balanced(container)
 
         # Reconcile moves together to cancel the previous one.
         if cancel:
@@ -1227,7 +1245,7 @@ class AccountInvoice(models.Model):
         return reverse_moves
 
         # Nuevo 07-12-21
-
+    '''
     def upload_xml_supplier(self):
         values = {"name": "/",  # we have to give the name otherwise it will be set to the mail's subject
                   }

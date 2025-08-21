@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- factura de cliente -->
+    <!-- factura de cliente -->('draft','cancel')('draft','cancel')
     <record id="account_move_form_view_inherit_fecr" model="ir.ui.view">
         <field name="name">account.move.form.view.inherit.fecr</field>
         <field name="model">account.move</field>
@@ -8,12 +8,20 @@
         <field name="arch" type="xml">
             <button name="action_invoice_sent" position="after">
                 <!--para clientes-->
-                <button name="action_check_hacienda" type="object" string="Consultar a Hacienda" attrs="{'invisible':[                     '|','|',                     ('state_tributacion', 'in', (False, 'aceptado','rechazado')),                     ('move_type','not in',['out_invoice','out_refund']),                     ('state','in',('draft','cancel')),                 ]}"/>
-                <button name="generate_and_send_invoices" type="object" string="Enviar a Hacienda" confirm="Está seguro de continuar este proceso ?" attrs="{'invisible':[                     '|','|','|',                     ('state_tributacion', '!=', False),                     ('electronic_sequence', '=', False),                     ('move_type','not in',['out_invoice','out_refund']),                     ('state','in',('draft','cancel')),                 ]}"/>
+                <button name="action_check_hacienda" type="object" string="Consultar a Hacienda"
+                        invisible="state_tributacion in (False, 'aceptado','rechazado') or move_type not in ['out_invoice','out_refund'] or state in ('draft','cancel') "
+                        />
+                <button name="generate_and_send_invoices" type="object" string="Enviar a Hacienda" confirm="Está seguro de continuar este proceso ?"
+                        invisible="state_tributacion != False or not electronic_sequence or move_type not in ['out_invoice','out_refund'] or state in ('draft','cancel') "
+                        />
 
                 <!--para proveedores-->
-                <button name="action_check_hacienda" type="object" string="Consultar a Hacienda" attrs="{'invisible':[                     '|','|',                     ('state_send_invoice', 'in', (False, 'aceptado','rechazado')),                     ('move_type','not in',['in_invoice','in_refund']),                     ('state','in',('draft','cancel')),                 ]}"/>
-                <button name="generate_and_send_invoices" type="object" string="Enviar a Hacienda" confirm="Está seguro de continuar este proceso ?" attrs="{'invisible':[                     '|','|','|',                     ('state_send_invoice', '!=', False),                     ('electronic_sequence', '=', False),                     ('move_type','not in',['in_invoice','in_refund']),                     ('state','in',('draft','cancel')),                 ]}"/>
+                <button name="action_check_hacienda" type="object" string="Consultar a Hacienda"
+                        invisible="state_send_invoice in (False, 'aceptado','rechazado') or move_type not in ['in_invoice','in_refund'] or state in  ('draft','cancel') "
+                        />
+                <button name="generate_and_send_invoices" type="object" string="Enviar a Hacienda" confirm="Está seguro de continuar este proceso ?"
+                        invisible="state_send_invoice != False or not electronic_sequence or move_type not in ['in_invoice','in_refund'] or state in ('draft','cancel') "
+                       />
 
             </button>
             <!-- enviar e imprimir siempre visible // TODO: Verificar si aplica para los dos botones -->
@@ -26,51 +34,59 @@
             </button>
 
             <field name="invoice_date" position="attributes">
-                <attribute name="attrs">{'invisible': [('move_type','=','entry')]}</attribute>
+                <attribute name="invisible">move_type == 'entry'</attribute>
             </field>
             <field name="invoice_date" position="after">
-                <field name="date_issuance" string="Fecha emisión" attrs="{'invisible': [('move_type','not in',('out_invoice','out_refund'))]}"/>
+                <field name="date_issuance" string="Fecha emisión"
+                       invisible = "move_type not in ('out_invoice','out_refund')" />
             </field>
             <field name="invoice_payment_term_id" position="attributes">
-                <attribute name="attrs">{'invisible': [('move_type','=','entry')], 'required': [('move_type','!=','entry')]}</attribute>
+                <attribute name="required">move_type != 'entry'</attribute>
+                <attribute name="invisible">move_type == 'entry'</attribute>
             </field>
             <xpath expr="//field[@name='tipo_documento']" position="replace"/>
             <xpath expr="//field[@name='ref']" position="after">
                 <field name="tipo_documento"/>
-                <field name="state_invoice_partner" attrs="{'invisible':['|',('tipo_documento','=', 'FEC'),('move_type','!=','in_invoice')],
-                'required': [('from_mail','=',True)]}" string="Aceptación"/>
+                <field name="state_invoice_partner"
+                       invisible="tipo_documento == 'FEC' or  move_type != 'in_invoice' "
+                       required="from_mail"
+                       string="Aceptación"/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <page id="e-invoice_tab" string="Facturación electrónica" attrs="{'invisible': [('move_type', '=', 'entry')]}">
+                <page id="e-invoice_tab" string="Facturación electrónica"
+                      invisible="move_type == 'entry'" >
                     <group>
                         <!--para clientes-->
                         <field name="reference_code_id" string="Tipo nota crédito"
-                               attrs="{'invisible':[('move_type','not in',['out_refund','in_refund'])]}"/>
+                               invisible = "move_type not in ['out_refund','in_refund']" />
                         <field name="invoice_id" domain="[('number_electronic', '!=', False)]" string="Comprobante original"
-                               attrs="{'invisible':[('move_type','not in',['out_refund','in_refund'])]}"/>
+                               invisible = "move_type not in ['out_refund','in_refund']" />
                         <field name="electronic_sequence" string="Secuencia"/>
                         <field name="number_electronic" string="Número electrónico"/>
                         <field name="state_tributacion" string="Estado" style="color:#24e112"
-                               attrs="{'invisible':[('move_type','in',['in_invoice','in_refund'])]}"/>
+                               invisible = "move_type in ['in_invoice','in_refund']" />
 
                         <!--para proveedores-->
                         <field name="fname_xml_supplier_approval" invisible="1"/>
-                        <label for="xml_supplier_approval" string="Comprobante XML" attrs="{'invisible': [('move_type','not in',['in_invoice','in_refund'])]}"/>
+                        <label for="xml_supplier_approval" string="Comprobante XML"
+                               invisible="move_type not in ['in_invoice','in_refund']" />
                         <div id="div_xml_supplier_approval">
                             <field name="xml_supplier_approval" filename="fname_xml_supplier_approval" string="Comprobante XML" class="mb-0 oe_inline"
-                                   attrs="{'invisible': [('move_type','not in',['in_invoice','in_refund'])]}"/>
+                                   invisible="move_type not in ['in_invoice','in_refund'] " />
                             <button name="upload_xml_supplier" string="Cargar datos de XML" type="object" icon="fa-arrow-right"
                                     class="btn btn-link pt-0"
-                                    attrs="{'invisible': ['|',('xml_supplier_approval','=',False),('move_type','not in',['in_invoice','in_refund'])]}"
+                                    invisible="not xml_supplier_approval or move_type not in ['in_invoice','in_refund']"
                             />
                         </div>
                         <!--                        <field name="xml_supplier_approval" filename="fname_xml_supplier_approval" />-->
-                        <field name="date_issuance" attrs="{'invisible':[('move_type','!=','in_invoice')]}" string="Fecha emisión"/>
-                        <field name="from_mail" string="Proviene de email?" attrs="{'invisible': [('move_type','not in',['in_invoice','in_refund'])]}"/>
+                        <field name="date_issuance"
+                               invisible="move_type != 'in_invoice'" string="Fecha emisión"/>
+                        <field name="from_mail" string="Proviene de email?"
+                               invisible="move_type not in ['in_invoice','in_refund'] " />
 
                         <field name="state_send_invoice" string="Estado" style="color:#24e112"
-                               attrs="{'invisible': [('move_type','not in',['in_invoice','in_refund'])]}"/>
+                               invisible="move_type not in ['in_invoice','in_refund']" />
 
                         <!--para xml-->
                         <field name="fname_xml_respuesta_tributacion" invisible="1"/>
@@ -83,37 +99,56 @@
                                    style="color:#0f4d9b"  />
                             <button name="generate_and_send_invoices" string="Reenviar hacienda" type="object" icon="fa-arrow-right"
                                     class="btn btn-link pt-0"
-                                    attrs="{'invisible': ['|', ('state_tributacion','not in', ['error','firma_invalida','na','ne'] ),
-                                                               ('move_type','not in',['out_invoice','out_refund'])]}"
+                                    invisible="state_tributacion not in ['error','firma_invalida','na','ne'] or move_type not in ['out_invoice','out_refund']"
+
                             />
                         </div>
 
 
                         <field name="electronic_invoice_return_message" string="Respuesta de hacienda" invisible="1"/>
-                        <field name="x_error_response" attrs="{'invisible': [('state_tributacion','not in',['error','rechazado'])]}" readonly="1"/>
+                        <field name="x_error_response"
+                               invisible="state_tributacion not in ['error','rechazado']"  readonly="1"/>
                         <field name="check_exoneration" invisible='1'/>
 
                     </group>
 
                 </page>
-                <page id="exoneracion" string="Exoneración" attrs="{'invisible': [('check_exoneration', '=', False)]}">
+                <page id="exoneracion" string="Exoneración"
+                      invisible="not check_exoneration" >
                     <group>
                         <group>
-                            <field name="numero_documento" placeholder="Ingrese número de autorización a buscar" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
-                            <field name="vat" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
-                            <field name="tax_id" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
-                            <field name="porcentaje_exoneracion" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
-                            <field name="tip_doc" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
+                            <field name="numero_documento" placeholder="Ingrese número de autorización a buscar"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration" />
+                            <field name="vat"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration" />
+                            <field name="tax_id"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration" />
+                            <field name="porcentaje_exoneracion"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration" />
+                            <field name="tip_doc"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration" />
                             <field name="num_doc" invisible='1'/>
 
                         </group>
                         <group>
 
-                            <field name="cabys_ids" widget="many2many_tags" attrs="{'readonly':[['state','not in',['draft']]]}"/>
-                            <field name="fecha_emision" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
+                            <field name="cabys_ids" widget="many2many_tags"
+                                   readonly="state not in ['draft']" />
+                            <field name="fecha_emision"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration"
+                            />
                             <field name="formato_fecha" invisible='1'/>
-                            <field name="fecha_vencimiento" attrs="{'readonly':[['state','not in',['draft']]]}"/>
-                            <field name="institucion" attrs="{'readonly':[['state','not in',['draft']]], 'required':[('check_exoneration','=', True)]}"/>
+                            <field name="fecha_vencimiento" readonly="state not in ['draft']" />
+                            <field name="institucion"
+                                   readonly="state not in ['draft']"
+                                   required="check_exoneration"
+                            />
 
                         </group>
                     </group>
@@ -137,25 +172,27 @@
                     <field name="payment_method_different_is" invisible="1"/>
                     <field name="payment_method_id" class="oe_inline"/>
                     <button type='object' class="fa fa-arrow-right oe_link oe_inline" name="assign_payment_method_different_partner"
-                            string="Asignar el del partner" attrs="{'invisible':[('payment_method_different_is','=',False)]}"/>
+                            string="Asignar el del partner"
+                            invisible="not payment_method_different_is" />
                 </div>
 <!--                <field name="payment_method_id" attrs="{'invisible': [('move_type','=','entry')], 'required': [('move_type','!=','entry')]}"/>-->
             </xpath>
 
-            <xpath expr="(//field[@name='amount_total'])[last()]" position="after">
+            <xpath expr="(//field[@name='invoice_outstanding_credits_debits_widget'])[last()]" position="after">
                 <field name="amount_tax_electronic_invoice"/>
                 <field name="amount_total_electronic_invoice"/>
             </xpath>
 
             <!--para proveedores-->
             <field name="partner_bank_id" position="after">
-                <field name="purchase_type" attrs="{'invisible':[('move_type','!=','in_invoice')]}"/>
+                <field name="purchase_type"
+                       invisible="move_type != 'in_invoice'" />
             </field>
 
             <xpath expr="//header" position="after">
-                <div attrs="{'invisible': [('move_type','not in',('out_invoice','out_refund'))]}">
+                <div invisible="move_type not in ('out_invoice','out_refund') ">
                     <div class="alert alert-success text-center o_form_header"
-                         attrs="{'invisible': [('state_tributacion', '!=', 'aceptado')]}" role="status">
+                         invisible="state_tributacion != 'aceptado'" role="status">
                         <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
                         <h4>
                             <strong>Estado del comprobante electrónico en hacienda:
@@ -165,7 +202,7 @@
                         </h4>
                     </div>
                     <div class="alert alert-warning text-center o_form_header"
-                         attrs="{'invisible': [('state_tributacion', '!=', 'procesando')]}" role="status">
+                         invisible="state_tributacion != 'procesando'" role="status">
                         <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
                         <h4>
                             <strong>Estado del comprobante electrónico en hacienda:
@@ -175,7 +212,7 @@
                         </h4>
                     </div>
                     <div class="alert alert-danger text-center o_form_header"
-                         attrs="{'invisible': ['|',('state_tributacion', 'in', ('aceptado','procesando')),('state_tributacion','=',False)]}" role="status">
+                         invisible="state_tributacion in ('aceptado','procesando') or state_tributacion == False " role="status">
                         <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
                         <h4>
                             <strong>Estado del comprobante electrónico en hacienda:
@@ -186,9 +223,9 @@
                     </div>
                 </div>
 
-                <div attrs="{'invisible': [('move_type','not in',('in_invoice','in_refund'))]}">
+                <div invisible="move_type not in ('in_invoice','in_refund')" >
                     <div class="alert alert-success text-center o_form_header"
-                         attrs="{'invisible': [('state_send_invoice', '!=', 'aceptado')]}" role="status">
+                         invisible="state_send_invoice != 'aceptado'" role="status">
                         <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
                         <h4>
                             <strong>Estado del comprobante electrónico en hacienda:
@@ -198,7 +235,7 @@
                         </h4>
                     </div>
                     <div class="alert alert-warning text-center o_form_header"
-                         attrs="{'invisible': [('state_send_invoice', '!=', 'procesando')]}" role="status">
+                         invisible="state_send_invoice != 'procesando'" role="status">
                         <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
                         <h4>
                             <strong>Estado del comprobante electrónico en hacienda:
@@ -208,7 +245,7 @@
                         </h4>
                     </div>
                     <div class="alert alert-danger text-center o_form_header"
-                         attrs="{'invisible': ['|',('state_send_invoice', 'in', ('aceptado','procesando')),('state_send_invoice','=',False)]}" role="status">
+                         invisible="state_send_invoice in ('aceptado','procesando') or state_send_invoice == False " role="status">
                         <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
                         <h4>
                             <strong>Estado del comprobante electrónico en hacienda:
@@ -227,7 +264,7 @@
                     <button name="action_quit_lines" string="Quitar líneas" type="object" class="btn-secondary float-right text-danger"
                             icon="fa-trash-o" groups="l10n_cr_electronic_invoice.group_show_delete_lines_invoice"
                             confirm="Esta seguro de quitar todas las líneas?."
-                            attrs="{'invisible': [('state','not in',('draft'))]}"/>
+                            invisible="state not in ('draft') " />
                 </div>
             </xpath>
 

@@ -298,7 +298,7 @@ class AccountMoveLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
-        super(AccountMoveLine, self)._onchange_product_id()
+        #super(AccountMoveLine, self)._onchange_product_id()
 
         lines = self.move_id.invoice_line_ids - self
         for line in lines:
@@ -316,5 +316,4 @@ class AccountMoveLine(models.Model):
         #             for x in line.move_id.line_ids:
         #                 if x.product_id.id == line.product_id.id and x.sequence != line.sequence:
         #                     line.change_color = True
-        #                     break
-
+        #                     break #

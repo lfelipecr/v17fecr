@@ -8,16 +8,16 @@
                 <field name="is_expired" invisible="1"/>
             </xpath>
             <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d'][2]" position="attributes">
-                <attribute name="attrs">
-                    {'invisible': ['|','|',('invoice_status', '!=', 'no'), ('state', '!=', 'sale'),('is_expired','=',
-                    True)]}
+
+                <attribute name="invisible">
+                    invoice_status != 'no' or state != 'sale' or is_expired
                 </attribute>
             </xpath>
             <xpath expr="//sheet" position="before">
                 <div class="alert alert-success text-center o_form_header"
-                     attrs="{'invisible': [('is_expired', '!=', True)]}" role="status">
+                     invisible="not is_expired "  role="status">
                     <a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
-                    <div attrs="{'invisible': [('is_expired', '!=', True)]}">
+                    <div invisible="not is_expired " >
                         <strong>El cliente perteneciente a este documento está afecto a exoneración, sin embargo la
                             expiración de la misma,
                             no permite generar la factura correspondiente.
@@ -31,10 +31,11 @@
                 <field name="has_exoneration" invisible="1"/>
                 <field name="due_exoneration" invisible="1"/>
                 <field name="partner_tax_id" invisible="1"/>
-                <field name="apply_discount_global" string="Aplicar descuento" style="color: #9b00b3" groups="product.group_discount_per_so_line"/>
+                <field name="apply_discount_global" string="Aplicar descuento" style="color: #9b00b3" />
+                <!-- groups="product.group_discount_per_so_line" -->
                 <label for="percentage_discount_global" string="Descuento general"
-                       attrs="{'invisible': [('apply_discount_global', '=',False)]}"/>
-                <div attrs="{'invisible': [('apply_discount_global', '=',False)]}">
+                       invisible ="not apply_discount_global" />
+                <div invisible ="not apply_discount_global" >
                     <field name="percentage_discount_global" class="mb-0 oe_inline text-center"
                            placeholder="*Ingrese descuento."/>
                     <span>%</span>
@@ -50,7 +51,8 @@
             <xpath expr="//notebook" position="before">
                 <div>
                     <field name="re_calcule" invisible="1"/>
-                    <div class="alert alert-info text-center" attrs="{'invisible': [('re_calcule', '=', False)]}"
+                    <div class="alert alert-info text-center"
+                         invisible="not re_calcule"
                          role="alert">
                         <strong>Asegúrese de calcular el descuento total nuevamente, puesto que hemos econtrado
                             inconfruencias entre el total

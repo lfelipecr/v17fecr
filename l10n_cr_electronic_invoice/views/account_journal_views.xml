@@ -10,33 +10,20 @@
                     <group>
                         <field name="to_process"/>
                     </group>
-                    <group attrs="{'invisible':['|', ('type', '!=', 'sale'), ('to_process', '=', False)]}">
+                    <group invisible="type != 'sale' or to_process" >
                         <group>
-                            <field name="FE_sequence_id" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
-                            <field name="TE_sequence_id" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
-                            <field name="FEE_sequence_id" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
+                            <field name="FE_sequence_id"
+                                   required="type == 'sale' and to_process" />
+                            <field name="TE_sequence_id" required="type == 'sale' and to_process" />
+                            <field name="FEE_sequence_id" required="type == 'sale' and to_process" />
                         </group>
                         <group>
-                            <field name="NC_sequence_id" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
-                            <field name="ND_sequence_id" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
+                            <field name="NC_sequence_id" required="type == 'sale' and to_process" />
+                            <field name="ND_sequence_id" required="type == 'sale' and to_process" />
                         </group>
                         <group>
-                            <field name="sucursal" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
-                            <field name="terminal" attrs="{
-                                'required':[('type', '=', 'sale'), ('to_process', '=', True)]
-                            }"/>
+                            <field name="sucursal" required="type == 'sale' and to_process" />
+                            <field name="terminal" required="type == 'sale' and to_process" />
                         </group>
                     </group>
                 </page>

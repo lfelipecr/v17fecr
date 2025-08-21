@@ -1,6 +1,6 @@
 {
     "name": "FECR",
-    "version": "14.2025.06.22",
+    "version": "17.0",
     "category": "Accounting",
     "summary": "Factura electrónica para Costa Rica",
     "author": "BIG CLOUD CR SRL",
@@ -18,7 +18,8 @@
         "l10n_cr_territories",
         "uom",
         "sale",
-        "fetchmail",
+        "l10n_cr_identification_type"
+        #"fetchmail",
     ],
     "data": [
         # security
@@ -42,7 +43,7 @@
         "data/uom_category.xml",
         "data/uom_data.xml",
         # reports
-        "reports/account_move.xml",
+        #"reports/account_move.xml", lo comente
         # views
         "views/account_move_views.xml",
         "views/account_journal_views.xml",
@@ -55,7 +56,7 @@
         "views/resolution_views.xml",
         "views/uom_views.xml",
         "views/res_partner_exonerated_views.xml",
-        "views/fetchmail_views.xml",
+        #"views/fetchmail_views.xml", ESTE MODULO YA NO EXISTIR
 
         #Vistas para exoneración
         "views/sale_views.xml",
@@ -76,10 +77,12 @@
             "suds",
             "xades",
             "xmlsig",
+            "xmltodict"
         ],
     },
-    "description": [
-        "static/description/description/screenshot.jpg",
-        "static/description/description/config.jpg",
-    ],
+    #"description": [
+    #    "static/description/images/screenshot.jpg",
+    #    "static/description/images/config.jpg",
+    #],
+
 }

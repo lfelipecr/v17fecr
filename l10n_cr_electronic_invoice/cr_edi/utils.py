@@ -13,8 +13,6 @@ from lxml import etree
 import re
 from . import abstract
 from .custom_xades.context import create_xades_epes_signature
-import logging
-_logger = logging.getLogger(__name__)
 
 #Nuevo 2022-04-22
 from ..xades.context2 import PolicyId2, XAdESContext2, create_xades_epes_signature
@@ -127,35 +125,34 @@ def sign_xml(cert, pin, xml):
     root = etree.fromstring(xml)
     root2 = etree.fromstring(xml)
     error = False
-    # try:
-    #     signature = context.create_xades_epes_signature()
-    #     policy = xades.policy.GenericPolicyId(
-    #         identifier=policy_id,
-    #         name=u"Politica de Firma Factura",
-    #         hash_method=xmlsig.constants.TransformSha1,
-    #     )
-    #     root.append(signature)
-    #     ctx = xades.XAdESContext(policy)
-    #     certificate = crypto.load_pkcs12(base64.b64decode(cert), pin)
-    #     ctx.load_pkcs12(certificate)
-    #     ctx.sign(signature)
-    # except Exception as e:
-    #     _logger.info(e)
-    #     error = True
-
     try:
-        signature = create_xades_epes_signature()
-        policy = PolicyId2()
-        policy.id = policy_id
-        root2.append(signature)
-        ctx = XAdESContext2(policy)
+        signature =  context.create_xades_epes_signature()
+        policy = xades.policy.GenericPolicyId(
+            identifier=policy_id,
+            name=u"Politica de Firma Factura",
+            hash_method=xmlsig.constants.TransformSha1,
+        )
+        root.append(signature)
+        ctx = xades.XAdESContext(policy)
         certificate = crypto.load_pkcs12(base64.b64decode(cert), pin)
         ctx.load_pkcs12(certificate)
         ctx.sign(signature)
-        root = root2
     except Exception as exc:
-        _logger.info(exc)
-        raise UserError(exc)
+        error = True
+
+    if error:
+        try:
+            signature = create_xades_epes_signature()
+            policy = PolicyId2()
+            policy.id = policy_id
+            root2.append(signature)
+            ctx = XAdESContext2(policy)
+            certificate = crypto.load_pkcs12(base64.b64decode(cert), pin)
+            ctx.load_pkcs12(certificate)
+            ctx.sign(signature)
+            root = root2
+        except Exception as exc:
+            raise UserError(exc)
 
 
     signed = etree.tostring(

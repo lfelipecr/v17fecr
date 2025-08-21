@@ -103,23 +103,26 @@ class AccountInvoice(models.Model):
                 if move.is_invoice(include_receipts=True):
                     # === Invoices ===
 
-                    if not line.exclude_from_invoice_tab:
-                        # Untaxed amount.
-                        total_untaxed += line.balance
-                        total_untaxed_currency += line.amount_currency
-                        total += line.balance
-                        total_currency += line.amount_currency
-                    elif line.tax_line_id:
+
+                    #elif line.tax_line_id:
+                    if  line.tax_line_id:
                         # Tax amount.
                         total_tax += line.balance
                         total_tax_currency += line.amount_currency
                         total += line.balance
                         total_currency += line.amount_currency
-                    elif line.account_id.user_type_id.type in ('receivable', 'payable'):
+                    elif line.account_id.account_type in ('asset_receivable', 'liability_payable'):
                         # Residual amount.
                         total_to_pay += line.balance
                         total_residual += line.amount_residual
                         total_residual_currency += line.amount_residual_currency
+                    #if not line.exclude_from_invoice_tab:
+                    else:
+                        # Untaxed amount.
+                        total_untaxed += line.balance
+                        total_untaxed_currency += line.amount_currency
+                        total += line.balance
+                        total_currency += line.amount_currency
                 else:
                     # === Miscellaneous journal entry ===
                     if line.debit:

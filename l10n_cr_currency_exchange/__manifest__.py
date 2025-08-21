@@ -1,11 +1,12 @@
 {
     "name": "L10N CR Currency Exchange",
-    "version": "14.0.2.0",
+    "version": "17.0",
     "author": "HomebrewSoft",
     "website": "https://homebrewsoft.dev",
     "license": "LGPL-3",
     "depends": [
         "account",
+        "spreadsheet"
     ],
     "data": [
         # security

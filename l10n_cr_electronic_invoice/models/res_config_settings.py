@@ -6,12 +6,9 @@ from odoo import api,fields, models
 class AccountConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    module_import_bills = fields.Boolean(string=u"Importación facturas electrónicas",
-                                         implied_group='account.group_account_manager')
-    einvoice_fields_add = fields.Boolean(string=u"Agregar datos comerciales en XML",implied_group='account.group_account_manager')
-
-    invoice_import_ids = fields.Many2one(comodel_name="account.move.import.config",string=u'Configuración para importar facturas.'
-    )
+    module_import_bills = fields.Boolean(string=u"Importación facturas electrónicas")
+    einvoice_fields_add = fields.Boolean(string=u"Agregar datos comerciales en XML")
+    invoice_import_ids = fields.Many2one(comodel_name="account.move.import.config",string=u'Configuración para importar facturas.')
 
     def set_values(self):
         super(AccountConfigSettings, self).set_values()

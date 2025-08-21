@@ -114,14 +114,7 @@ def data_xml(self, root, factura, invoice_import_ids, fname, xml_code):
         else:
             _logger.error("No valid date format for {}".format(date_issuance))
             r = 0
-        #De aqui para abajo agregué
-        if isinstance(date_time_obj, datetime):
-            invoice_date = date_time_obj.date()
-        else:
-            _logger.error(f"Error: No se pudo convertir la fecha de emisión '{date_issuance}' en un objeto datetime válido.")
-            return {} 
-        #Esta es la linea que da error
-        #invoice_date = date_time_obj.date()
+        invoice_date = date_time_obj.date()
 
         try:
             emisor = factura.xpath("inv:Emisor/inv:Identificacion/inv:Numero", namespaces=namespaces)[0].text

@@ -219,14 +219,11 @@ def gen_from_template(
 
     phone_obj_issuer = phonenumbers.parse(issuer.phone, issuer.country_id and issuer.country_id.code)
     if 'pos_reference' in document:
-        lines = document._pos_get_lines_xml(lines)
-        amounts = document.get_amounts(lines)
-        phone_obj_receiver = False
-        if receiver:
-            phone_obj_receiver = phonenumbers.parse(
-                receiver.phone or issuer.phone,
-                (receiver.country_id or issuer.country_id) and (receiver.country_id.code or issuer.country_id.code)
-            )
+        amounts = document.get_amounts()
+        phone_obj_receiver = phonenumbers.parse(
+            receiver.phone,
+            (receiver.country_id or issuer.country_id) and (receiver.country_id.code or issuer.country_id.code)
+        )
         if not phone_obj_receiver:
             phone_obj_receiver = None
         render = template.render(

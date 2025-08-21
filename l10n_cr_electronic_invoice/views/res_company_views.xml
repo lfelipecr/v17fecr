@@ -27,22 +27,22 @@
                             <field name="frm_ws_ambiente"/>
                         </group>
                     </group>
-                    <group attrs="{'invisible': [('frm_ws_ambiente', '=', False)]}">
+                    <group  invisible="not frm_ws_ambiente">
                         <group string="Credentials">
-                            <field name="signature" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
-                            <field name="frm_ws_identificador" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
-                            <field name="frm_ws_password" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}" password="True"/>
-                            <field name="frm_pin" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}" password="True"/>
+                            <field name="signature" required="frm_ws_ambiente" />
+                            <field name="frm_ws_identificador" required="frm_ws_ambiente"/>
+                            <field name="frm_ws_password"  required="frm_ws_ambiente" password="True"/>
+                            <field name="frm_pin"  required="frm_ws_ambiente" password="True"/>
                         </group>
                         <group string="Sequences">
-                            <field name="CCE_sequence_id" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
-                            <field name="CPCE_sequence_id" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
-                            <field name="RCE_sequence_id" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
-                            <field name="FEC_sequence_id" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
+                            <field name="CCE_sequence_id"  required="frm_ws_ambiente" />
+                            <field name="CPCE_sequence_id"  required="frm_ws_ambiente" />
+                            <field name="RCE_sequence_id"  required="frm_ws_ambiente" />
+                            <field name="FEC_sequence_id"  required="frm_ws_ambiente" />
                         </group>
                         <group string="PoS">
-                            <field name="sucursal_MR" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
-                            <field name="terminal_MR" attrs="{'required': [('frm_ws_ambiente', '!=', False)]}"/>
+                            <field name="sucursal_MR"   required="frm_ws_ambiente" />
+                            <field name="terminal_MR"   required="frm_ws_ambiente" />
                         </group>
                     </group>
                 </page>

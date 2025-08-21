@@ -15,10 +15,16 @@ class AccountMoveReversal(models.TransientModel):
 
     def _prepare_default_reversal(self, move):
 
+
         if not self.journal_id:
             raise UserError(_("Seleccione un diario por favor. De preferencia Diario de Clientes."))
 
-        reverse_date = self.date if self.date_mode == 'custom' else move.date
+        reverse_date = self.date
+
+        auto_post = 'at_date' if reverse_date > fields.Date.context_today(self) else 'no'
+
+        #raise ValueError(auto_post)
+
         return {
             'ref': _('Rectificativa de: %(move_name)s, %(reason)s', move_name=move.name, reason=self.reason)
                    if self.reason
@@ -27,7 +33,7 @@ class AccountMoveReversal(models.TransientModel):
             'invoice_date': move.is_invoice(include_receipts=True) and (self.date or move.date) or False,
             'journal_id': self.journal_id and self.journal_id.id or move.journal_id.id,
             'invoice_user_id': move.invoice_user_id.id,
-            'auto_post': True if reverse_date > fields.Date.context_today(self) else False,
+            'auto_post': auto_post,
             'reference_code_id': self.reference_code_id.id,
             'invoice_id':  move.id,
             'tipo_documento': 'NC',

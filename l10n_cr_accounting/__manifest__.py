@@ -1,9 +1,9 @@
 {
     "name": "L10N CR Accounting",
-    "version": "14.0.0.4",
+    "version": "17.0",
     "category": "Accounting",
-    "author": "HomebrewSoft",
-    "website": "https://homebrewsoft.dev",
+    "author": "Xalachi",
+    "website": "https://www.xalachi.com",
     "license": "LGPL-3",
     "depends": [
         "account",
@@ -20,7 +20,7 @@
         "data/payment_methods_data.xml",
         "data/reference_code_data.xml",
         # views
-        "views/account_move_line.xml",
+        #"views/account_move_line.xml",
         # "views/account_invoice_tax.xml",
         "views/menu_views.xml",
         "views/account_move.xml",
