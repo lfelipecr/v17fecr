@@ -1,6 +1,6 @@
 {
     "name": "FECR",
-    "version": "17.0",
+    "version": "17.1",
     "category": "Accounting",
     "summary": "Factura electrónica para Costa Rica",
     "author": "BIG CLOUD CR SRL",
@@ -38,5 +38,5 @@
             "xmlsig",
             "xmltodict"
         ],
-    }, 
+    },
 }
